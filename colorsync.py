@@ -17,15 +17,11 @@ with open('info.json') as f:
 
 username = data['spotifyid']
 scope = 'user-read-currently-playing'
-print(username)
-print('client id: ' + data['clientid'])
-print('redirect uri: ' + data['redirecturi'])
-print('client secret: ' + data['clientsecret'])
 
 try:
-    token = util.prompt_for_user_token(username, scope, client_id='da6dedaae92b4cf2b957f9d77c6434b5',
-                                       client_secret='bbbdd161cc5f421997e71c4962ef2f73',
-                                       redirect_uri='https://www.google.com/')
+    token = util.prompt_for_user_token(username, scope, client_id=data['clientid'],
+                                       client_secret=data['clientsecret'],
+                                       redirect_uri=data['redirecturi'])
 except spotipy.oauth2.SpotifyOauthError:
     print('bad request')
 
