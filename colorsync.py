@@ -5,7 +5,6 @@ import spotipy
 import webbrowser
 import spotipy.util as util
 from json.decoder import JSONDecodeError
-import config
 
 from colorthief import ColorThief
 from urllib.request import urlretrieve
@@ -13,18 +12,28 @@ from urllib.request import urlretrieve
 from yeelight import Bulb
 import time
 
-username = config.spotifyId
+with open('info.json') as f:
+    data = json.load(f)
+
+username = data['spotifyid']
 scope = 'user-read-currently-playing'
+print(username)
+print('client id: ' + data['clientid'])
+print('redirect uri: ' + data['redirecturi'])
+print('client secret: ' + data['clientsecret'])
 
 try:
-    token = util.prompt_for_user_token(username, scope, client_id=config.CLIENT_ID,
-                                       client_secret=config.CLIENT_SECRET,
-                                       redirect_uri=config.REDIRECT_URI)
-except:
+    token = util.prompt_for_user_token(username, scope, client_id='da6dedaae92b4cf2b957f9d77c6434b5',
+                                       client_secret='bbbdd161cc5f421997e71c4962ef2f73',
+                                       redirect_uri='https://www.google.com/')
+except spotipy.oauth2.SpotifyOauthError:
+    print('bad request')
+
+except Exception:
     os.remove(f".cache-{username}")
-    token = util.prompt_for_user_token(username, scope, client_id=config.CLIENT_ID, 
-                                       client_secret=config.CLIENT_SECRET,
-                                       redirect_uri=config.REDIRECT_URI)
+    token = util.prompt_for_user_token(username, scope, client_id=data['clientid'],
+                                      client_secret=data['clientsecret'],
+                                      redirect_uri=data['redirecturi'])
 
 spotify_object = spotipy.Spotify(auth=token)
 
@@ -41,8 +50,8 @@ class CurrentState:
 
 class Lamps:
     def __init__(self, color):
-        self.bulb1 = Bulb(config.bulb1Ip)
-        self.bulb2 = Bulb(config.bulb2Ip)
+        self.bulb1 = Bulb(data['bulb1'])
+        self.bulb2 = Bulb(data['bulb2'])
         self.bulb1.set_rgb(color[0], color[1], color[2])
         self.bulb2.set_rgb(color[0], color[1], color[2])
 
